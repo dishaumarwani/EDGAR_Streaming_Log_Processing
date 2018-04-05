@@ -6,9 +6,13 @@ from datetime import datetime, date, time
 def inactivity_period(arg):
     with open(arg) as st:
         for line in st:
-            i = line
+            i = int(line)
     st.close()
-    return int(i)
+    if(i>1 and i<86400):
+        return i
+    else:
+        print("Incorrect session activity period")
+
 
 #check if any timestamp has expired
 def expired_timestamp(curr_active_session, current_timestamp, st):
@@ -27,12 +31,14 @@ def find_ip_address(current_active_session, ip):
 def write_output(curr_active_sessions,out_file, et=None):
     with open(out_file, "a") as fo:
         if(et):
+            print(curr_act_sessions[et])
             for i in list(curr_act_sessions[et]):
                 session_time = (datetime.strptime(curr_act_sessions[et][i]['end_time'], "%Y-%m-%d %H:%M:%S")\
                                 -datetime.strptime(curr_act_sessions[et][i]['start_time'], "%Y-%m-%d %H:%M:%S")).seconds + 1
                 wr = i+','+ curr_act_sessions[et][i]['start_time']+ ','+\
                 curr_act_sessions[et][i]['end_time']+','+str(session_time)+','+str(curr_act_sessions[et][i]['count'])+'\n'
                 fo.write(wr)
+
             curr_act_sessions.pop(et)        
         else:        
             for i in list(curr_act_sessions):
@@ -55,43 +61,33 @@ if __name__ == "__main__":
         spamreader = csv.reader(f, delimiter=',', quotechar="'")
         curr_act_sessions = dict()
         current_timestamp = 0
+        
         for row in spamreader:
             #extract all the required fields
             ip = row[0]
-            date_c = row[1]
-            #convert the date and time fields
-            d = date_c.split('-')
-            dx = date(int(d[0]), int(d[1]), int(d[2]))
-            time_c = row[2]
-            t = time_c.split(':')
-            tx = time(int(t[0]), int(t[1]), int(t[2]))
-            dt = datetime.combine(dx, tx)
+            date_time_c = row[1]+' '+row[2]
+            dt = datetime.strptime(date_time_c, "%Y-%m-%d %H:%M:%S")
             document = str(row[4])+' '+str(row[5])+' '+str(row[6])
             
             #checks in both the timestamps if ip address is present
             tm = find_ip_address(curr_act_sessions, ip)
-            if(tm != None):
-                if(document in curr_act_sessions[tm][ip]):
-                    curr_act_sessions[tm][ip][document] += 1
-                else:
-                    curr_act_sessions[tm][ip][document] = 1
-                    curr_act_sessions[tm][ip]['count'] += 1
-                    curr_act_sessions[tm][ip]['end_time'] = date_c+' '+time_c
+
+            if(tm != None):    
+                curr_act_sessions[tm][ip]['count'] += 1
+                curr_act_sessions[tm][ip]['end_time'] = date_time_c
                 if(tm != dt):
                     if(current_timestamp != dt):
                         if(dt not in curr_act_sessions):
                             curr_act_sessions[dt] = {}
                         curr_act_sessions[dt][ip] = curr_act_sessions[tm][ip]
-                        curr_act_sessions[tm].pop(ip)
-                        
+                        curr_act_sessions[tm].pop(ip)        
             else:
                 if(current_timestamp != dt):
                     curr_act_sessions[dt] = {}
                 curr_act_sessions[dt][ip] = {}
-                curr_act_sessions[dt][ip]['start_time'] = date_c+' '+time_c
-                curr_act_sessions[dt][ip]['end_time'] = date_c+' '+time_c
+                curr_act_sessions[dt][ip]['start_time'] = date_time_c
+                curr_act_sessions[dt][ip]['end_time'] = date_time_c
                 curr_act_sessions[dt][ip]['count'] = 1
-                curr_act_sessions[dt][ip][document] = 1
                 
             #This will be true after every second
             #All the timestamps mainly previous two will be compared if they have expired.
@@ -100,5 +96,5 @@ if __name__ == "__main__":
                 if(et):
                     write_output(curr_act_sessions,out_file, et)
                 current_timestamp = dt
-
+        f.close()
     write_output(curr_act_sessions, out_file, None)
