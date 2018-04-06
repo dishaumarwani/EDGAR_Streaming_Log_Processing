@@ -32,6 +32,7 @@ Another more efficient way would have been to make an index on start_time_sp.
 This reduces the number of comparisons extensively to a value of 2 versus the worst case comparison of n
 each time there is a change in time encountered. The distadvantage of this was that it required a sort by 
 start time each time the output needs to be written to file which would wash off its gain in time complexity.
+The code for this can be found in sessionization_optimized.py.
 
 # Preference of Algorithm
 
@@ -61,7 +62,8 @@ The environment reuired for the script to run is Python 3.6+
 
 # Implementation Details
 The code has been implemented in a modular manner in a simple file using functional programming paradigms 
-
+There are two implementations:
+1. sessionization.py
 There are 6 functions
 * `inactivity_period` : reads the input file and derives the inactivity period
 * `parse_time` : converts a string to datetime object
@@ -69,5 +71,12 @@ There are 6 functions
 * `process_line` : code runs for all lines in the log file parsing the input and then processing it according to the algorithm
 * `write_output` : writes the output to a text file
 * `main function` : maintains the flow of execution
+
+It can be run from root folder using ./run.sh in bash terminal
+
+2. sessionization_optimized.py
+This is only for reference as it does not print the output in the sequence as expected but takes less number of comparisons than the 1st code.
+
+It can be run from root folder using ./run_optimized.sh in bash terminal
 
 The code handles exceptions at each stage and is robust to errors.
