@@ -2,10 +2,10 @@
 Streaming processing of log file
 
 # Contents
-1. [Preference of Datastructure](README.md#Preferenceof Datastructure)
-2. [Preference of Algorithm](README.md#Preferenceof Algorithm)
-3. [Required Libraries and Environment](README.md#Required Libraries and Environment)
-4. [Implementation Details](README.md#Implementation Details)
+1. [Preference of Datastructure](README.md#Preference-of-Datastructure)
+2. [Preference of Algorithm](README.md#Preference-of-Algorithm)
+3. [Required Libraries and Environment](README.md#Required-Libraries-and-Environment)
+4. [Implementation Details](README.md#Implementation-Details)
 
 # Preference of Datastructure
 
