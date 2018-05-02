@@ -90,8 +90,6 @@ def process_line(session_dict, row, ip_in, date_c_in, time_c_in, current_timesta
         #update the most recent session time
         session_dict[ip]['start_time_stp'] = dt
 
-        session_dict[ip]['end_date'] = date_time_c
-
     else:
         #if the ip session is starting
         session_dict[ip] = {}
